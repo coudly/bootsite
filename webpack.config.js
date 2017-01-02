@@ -1,16 +1,22 @@
 const webpack = require('webpack')
 const path = require('path')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+
+console.log(process.env.NODE_ENV, process.env.NODE_ENV === 'production')
+
+const isProduction = process.env.NODE_ENV === 'production'
 
 module.exports = {
   entry: {
-    'index': [
-      'webpack-hot-middleware/client?reload=true',
+    'index': (isProduction?[]:[
+      'webpack-hot-middleware/client?reload=true'
+      ]).concat([
       'regenerator-runtime/runtime.js',
       './src/index.js'
-    ]
+    ])
   },
   output: {
-    pathinfo: true,
+    pathinfo: !isProduction,
     path: path.resolve(__dirname, "lib"),
     publicPath: "/lib/",
     filename: "bundle.js"
@@ -50,13 +56,15 @@ module.exports = {
       manifest: require("./lib/vendor-manifest.json")
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       "process.env": {
-        //NODE_ENV: '"production"'
-        NODE_ENV: '"development"'
+        NODE_ENV: isProduction ? '"production"': '"development"'
       }
     }),
-    new webpack.NoErrorsPlugin()
-  ]
+    new webpack.NoErrorsPlugin()].concat(isProduction ? [
+    new ExtractTextPlugin("[name].css", { allChunks: true }),
+    new webpack.optimize.UglifyJsPlugin({ compressor: { warnings: false } }),
+    new webpack.BannerPlugin("/**compressed**/", { raw: true })
+  ] : [ new webpack.HotModuleReplacementPlugin() ])
+    
 };

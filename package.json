@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run vendor && node index.js",
-    "build": "webpack --progress",
+    "build": "set NODE_ENV=production&& npm run vendor && webpack --progress",
+    "demo": "set NODE_ENV=production&& npm run build && node index.js",
     "vendor": "webpack --progress --config webpack.config.deps.js"
   },
   "author": "",

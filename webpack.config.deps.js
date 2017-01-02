@@ -1,13 +1,12 @@
 const path = require('path')
 const webpack = require('webpack')
-//const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+console.log(process.env.NODE_ENV, process.env.NODE_ENV === 'production')
 
+const isProduction = process.env.NODE_ENV === 'production'
 module.exports = {
   entry: {
-    "vendor": [
-      "webpack/buildin/module.js",
-      // "core-js",
-      //"webpack-hot-middleware/process-update.js",
+    "vendor": (isProduction ? [] : [
       "webpack-hot-middleware/client-overlay.js",
       "ansi-regex/index.js",
       "ansi-html/index.js",
@@ -18,10 +17,12 @@ module.exports = {
       "html-entities/lib/xml-entities.js",
       "html-entities/lib/html4-entities.js",
       "html-entities/lib/html5-entities.js",
-      "html-entities/index.js",
+      "html-entities/index.js"
+    ]).concat([
+      "webpack/buildin/module.js",
+      "regenerator-runtime/runtime.js"
 
       // "babel-polyfill",
-      "regenerator-runtime/runtime.js",
       //"react-hot-loader",
       //"lodash",
       //"react",
@@ -38,7 +39,7 @@ module.exports = {
       //"redux-thunk",
       //"normalizr",
       //"reselect",
-    ]
+    ])
   },
 
   output: {
@@ -84,9 +85,9 @@ module.exports = {
       name: "_[name]_",
       path: path.resolve(path.join(__dirname, "lib", "[name]-manifest.json"))
     }),
-    // new ExtractTextPlugin("[name].css", { allChunks: true }),
-    new webpack.NoErrorsPlugin(),
-    //new webpack.optimize.UglifyJsPlugin({ compressor: { warnings: false } }),
-    //new webpack.BannerPlugin("/**compressed**/", { raw: true })
-  ]
+    new webpack.NoErrorsPlugin()].concat(isProduction ? [
+    new ExtractTextPlugin("[name].css", { allChunks: true }),
+    new webpack.optimize.UglifyJsPlugin({ compressor: { warnings: false } }),
+    new webpack.BannerPlugin("/**compressed**/", { raw: true })
+  ] : [])
 };

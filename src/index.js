@@ -1,9 +1,9 @@
-
-console.log('hello world')
+const employee = [
+  '10001', '10002', '10003', '10004', '10005'
+]
 
 const el = document.getElementById('__react_content')
-el.innerHTML = 'hello world 323'
-
+el.innerHTML = 'hello world'
 
 function b(p1) {
   return new Promise(function(resolve, reject) {
